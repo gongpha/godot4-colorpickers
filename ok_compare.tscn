@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://bb541hs3x6h83"]
+
+[node name="list" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_custom_anchors = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+offset_right = 1024.0

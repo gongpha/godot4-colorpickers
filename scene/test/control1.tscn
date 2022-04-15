@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://djof0x4kgirdu"]
+
+[ext_resource type="Script" path="res://script/picker_control.gd" id="1_k3fsf"]
+
+[node name="PickerControl" type="VBoxContainer"]
+offset_right = 84.0
+offset_bottom = 110.0
+script = ExtResource( "1_k3fsf" )

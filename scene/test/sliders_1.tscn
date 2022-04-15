@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://c43tyv2gncfyd"]
+
+[ext_resource type="Script" path="res://script/picker_sliders_hsv.gd" id="1_87j2g"]
+[ext_resource type="Script" path="res://script/picker_sliders_rgba.gd" id="1_0187f"]
+
+[node name="VBoxContainer" type="VBoxContainer"]
+offset_right = 267.0
+offset_bottom = 305.0
+
+[node name="rgb" type="VBoxContainer" parent="."]
+offset_right = 267.0
+script = ExtResource( "1_0187f" )
+
+[node name="hsv" type="VBoxContainer" parent="."]
+offset_top = 4.0
+offset_right = 267.0
+offset_bottom = 4.0
+script = ExtResource( "1_87j2g" )
