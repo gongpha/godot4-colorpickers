@@ -40,12 +40,14 @@ var color : Color
 var old_color : Color
 
 var colorized_sliders : bool = true :
-	set(new_) :
-		colorized_sliders = new_
-		_update_appearance()
+	set = set_colorized_sliders
 		
 var display_old_color : bool = true :
 	set = set_display_old_color
+	
+@export var edit_alpha : bool = true :
+	set = set_edit_alpha
+	
 func _init() :
 	#shape = PickerShape.new()
 	#shape.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -102,6 +104,7 @@ func _init() :
 	code_hex_toggle.connect("pressed", Callable(self, "_code_hex_toggle"))
 	code_hex_toggle.text = '#'
 	code_hex_line.size_flags_horizontal = SIZE_EXPAND_FILL
+	code_hex_line.connect("text_submitted", Callable(self, "_html_submitted"))
 	
 	#
 	
@@ -212,6 +215,8 @@ func _update_shape_popup() :
 			popup.set_item_disabled(i, false)
 			if first_available == -1 :
 				first_available = i
+			if current_shape_mode == i :
+				return
 		else :
 			popup.set_item_disabled(i, true)
 			if current_shape_mode == i :
@@ -259,26 +264,22 @@ func _shape_selected(id : int) :
 	
 	if current_shape_mode == id :
 		return
+		
+	var mode := modes[current_mode]
 	
 	if current_shape_mode >= 0 :
-		var mode := modes[current_shape_mode]
 		popup.set_item_checked(current_shape_mode, false)
 		shape_content.remove_child(mode.shape)
 		
 	current_shape_mode = id
 	
 	if current_shape_mode != -1 :
-		var mode := modes[current_shape_mode]
 		popup.set_item_checked(current_shape_mode, true)
 		shape_content.add_child(mode.shape)
 		mode.shape.shape = current_shape_mode
 		
 	_reset_color(true, true)
-		
-func _update_appearance() :
-	for m in modes :
-		(m as Mode).sliders.colorized_sliders = colorized_sliders
-		
+	
 func _reset_color(update_sliders : bool, update_shape : bool) :
 	var mode : Mode
 		
@@ -310,12 +311,13 @@ func _code_hex_toggle() :
 		
 func _update_codehex() :
 	if use_hex :
-		code_hex_line.text = color.to_html()
+		code_hex_line.text = color.to_html(edit_alpha)
 	else :
 		code_hex_line.text = ("Color(" +
 			String.num(color.r, 3) + ", " +
 			String.num(color.g, 3) + ", " +
-			String.num(color.b, 3) + ")"
+			String.num(color.b, 3) +
+			("," + String.num(color.a, 3) if edit_alpha else "") + ")"
 		)
 		
 func _sample_draw() :
@@ -352,6 +354,20 @@ func _sample_input(event) :
 			if rect_old.has_point(event.position) :
 				set_color(old_color)
 				
+# https://github.com/godotengine/godot/blob/master/scene/gui/color_picker.cpp#L318
+func _html_submitted(html : String) :
+	if !use_hex or !code_hex_line.is_visible() :
+		return
+		
+	var last_alpha : float = color.a
+	var color_ := Color.html(html)
+	
+	# IS EDITING ALPHA
+	
+	if !is_inside_tree() :
+		return
+		
+	set_color(color_)
 
 func _implement_default_controls() :
 	var sliders : PickerSliders = PickerSlidersRGBA.new()
@@ -380,3 +396,21 @@ func set_old_color(new_ : Color) :
 func set_display_old_color(new_ : bool) :
 	display_old_color = new_
 	sample_rect.update()
+	
+func set_edit_alpha(new_ : bool) :
+	if edit_alpha == new_ :
+		return
+	
+	edit_alpha = new_
+	
+	for m in modes :
+		(m as Mode).sliders.edit_alpha = edit_alpha
+
+func set_colorized_sliders(new_ : bool) :
+	if colorized_sliders == new_ :
+		return
+		
+	colorized_sliders = new_
+	
+	for m in modes :
+		(m as Mode).sliders.colorized_sliders = colorized_sliders

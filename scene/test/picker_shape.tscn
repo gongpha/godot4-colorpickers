@@ -3,19 +3,20 @@
 [ext_resource type="Script" path="res://script/picker_shape_hsv.gd" id="1_d20wo"]
 
 [node name="vbox" type="VBoxContainer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_bottom = 4.0
 metadata/_edit_use_custom_anchors = false
 
-[node name="rect" type="Control" parent="."]
-offset_right = 1024.0
+[node name="wheel" type="AspectRatioContainer" parent="."]
+script = ExtResource( "1_d20wo" )
+shape = 2
+
+[node name="rect" type="AspectRatioContainer" parent="."]
+offset_top = 4.0
+offset_bottom = 4.0
 script = ExtResource( "1_d20wo" )
 
-[node name="circle" type="Control" parent="."]
-offset_top = 4.0
-offset_right = 1024.0
-offset_bottom = 4.0
+[node name="circle" type="AspectRatioContainer" parent="."]
+offset_top = 8.0
+offset_bottom = 8.0
 script = ExtResource( "1_d20wo" )
 shape = 1

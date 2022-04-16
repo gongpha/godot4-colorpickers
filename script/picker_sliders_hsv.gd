@@ -2,6 +2,7 @@ extends PickerSliders
 class_name PickerSlidersHSV
 
 func _init() :
+	super._init()
 	#smaterial.set_shader_param("mode", 3)
 	var shader := preload("res://resource/shader/hsv_rectangle.gdshader")
 	

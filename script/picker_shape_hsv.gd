@@ -3,7 +3,7 @@ class_name PickerShapeHSV
 
 func _init() :
 	super._init()
-	available_shapes = 0b0011
+	available_shapes = 0b0111
 
 func _update_shape() :
 	match shape :
@@ -12,6 +12,7 @@ func _update_shape() :
 			uv_mat.set_shader_param("mode", 0)
 			w_mat.shader = uv_mat.shader
 			w_mat.set_shader_param("mode", 1)
+			w_draw.show()
 			
 		ShapeType.SHAPE_CIRCLE :
 			uv_mat.shader = preload("res://resource/shader/hsv_circle.gdshader")
@@ -19,25 +20,40 @@ func _update_shape() :
 			w_mat.set_shader_param("mode", 3)
 			w_mat.set_shader_param("c1", Color.WHITE)
 			w_mat.set_shader_param("c2", Color.BLACK)
+			w_draw.show()
+			
+		ShapeType.SHAPE_RECTANGLE_WHEEL :
+			uv_mat.shader = preload("res://resource/shader/hsv_wheel.gdshader")
+			w_draw.hide()
 
 func _make_color() :
+	var a := color.a
 	match shape :
 		ShapeType.SHAPE_RECTANGLE :
 			color.h = w_input
 			color.s = uv_input.x
 			color.v = 1.0 - uv_input.y
 			
+		ShapeType.SHAPE_RECTANGLE_WHEEL :
+			color.h = _linear2h(w_input)
+			color.s = uv_input.x
+			color.v = 1.0 - uv_input.y
+			
 		ShapeType.SHAPE_CIRCLE :
-			var rad : float = uv_input.x
-			#((rad >= 0) ? rad : (Math_TAU + rad)) / Math_TAU;
-			color.h = (uv_input.x if rad >= 0 else (TAU + rad)) / TAU
+			color.h = _linear2h(uv_input.x)
 			color.s = uv_input.y
 			color.v = 1.0 - w_input
+	color.a = a
 
 func _reset_color() :
 	match shape :
-		ShapeType.SHAPE_RECTANGLE :
+		ShapeType.SHAPE_RECTANGLE, ShapeType.SHAPE_RECTANGLE_WHEEL :
 			w_input = color.h
+			uv_input.x = color.s
+			uv_input.y = 1.0 - color.v
+			
+		ShapeType.SHAPE_RECTANGLE_WHEEL :
+			w_input = color.h * TAU
 			uv_input.x = color.s
 			uv_input.y = 1.0 - color.v
 			

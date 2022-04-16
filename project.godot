@@ -14,7 +14,7 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://script/picker_control.gd"
 }, {
-"base": "Container",
+"base": "AspectRatioContainer",
 "class": &"PickerShape",
 "language": &"GDScript",
 "path": "res://script/picker_shape.gd"
@@ -51,7 +51,7 @@ _global_script_class_icons={
 [application]
 
 config/name="gd4ColorPickers"
-run/main_scene="res://scene/test/sliders_1.tscn"
+run/main_scene="res://scene/test/control1.tscn"
 config/icon="res://icon.png"
 config/features=PackedStringArray("4.0", "Vulkan Mobile")
 

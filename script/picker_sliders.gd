@@ -3,11 +3,11 @@ class_name PickerSliders
 
 # ABSTRCT Sliders group. NO shape ^-^
 
-var color : Color = Color(0, 0, 0, 0)
+var color : Color
 		
 var updating : bool = false
 
-var colorized_sliders : bool = true :
+@export var colorized_sliders : bool = true :
 	set(new_) :
 		if colorized_sliders == new_ :
 			return
@@ -16,6 +16,20 @@ var colorized_sliders : bool = true :
 		
 		for s in sliders :
 			s.set_coloring(colorized_sliders)
+		alpha_slider.set_coloring(colorized_sliders)
+			
+@export var edit_alpha : bool = true :
+	set(new_) :
+		if edit_alpha == new_ :
+			return
+		
+		edit_alpha = new_
+		
+		_update_alpha_visibility()
+			
+####################
+
+var hsep : HSeparator
 
 class SliderItem :
 	var bg : Panel
@@ -25,6 +39,7 @@ class SliderItem :
 	var update_call : StringName#Callable
 		
 	var empty : StyleBoxEmpty
+	var color_panel : StyleBox
 	var grabber : Texture2D
 	
 	var material : ShaderMaterial
@@ -38,7 +53,7 @@ class SliderItem :
 		
 	func set_coloring(yes : bool) :
 		if yes and material != null :
-			bg.remove_theme_stylebox_override("panel")
+			bg.add_theme_stylebox_override("panel", color_panel)
 			slider.add_theme_stylebox_override("slider", empty)
 			slider.add_theme_icon_override("grabber", grabber)
 			slider.add_theme_icon_override("grabber_highlight", grabber)
@@ -51,6 +66,7 @@ class SliderItem :
 			slider.remove_theme_icon_override("grabber_disabled")
 
 var sliders : Array[SliderItem]
+var alpha_slider : SliderItem
 var empty := StyleBoxEmpty.new()
 
 var default_slider_panel : StyleBox = preload("res://resource/theme_element/slider_panel.tres")
@@ -61,7 +77,38 @@ const C_label_width : int = 16
 
 signal color_updated(col)
 
+func _init() :
+	hsep = HSeparator.new()
+	add_child(hsep)
+	
+	alpha_slider = _create_slider(
+		"A",
+		"_set_a",
+		preload("res://resource/shader/hsv_rectangle.gdshader"),
+		255,
+		1
+	)
+	
+	add_child(alpha_slider.hbox)
+	alpha_slider.material.set_shader_param("mode", 6)
+	
+	alpha_slider.set_value(color.a * 255)
+
 func add_slider(
+	label_text : String,
+	update_call : StringName,#update_call : Callable, << Callable still Buggy
+	shader : Shader,
+	max_val : float,
+	step : float
+) -> SliderItem :
+	var item := _create_slider(label_text, update_call, shader, max_val, step)
+	if item :
+		sliders.append(item)
+		add_child(item.hbox)
+		move_child(item.hbox, hsep.get_index())
+	return item
+	
+func _create_slider(
 	label_text : String,
 	update_call : StringName,#update_call : Callable, << Callable still Buggy
 	shader : Shader,
@@ -71,6 +118,7 @@ func add_slider(
 	var item := SliderItem.new()
 	item.empty = empty
 	item.grabber = default_slider_grabber
+	item.color_panel = default_slider_panel
 	
 	item.hbox = HBoxContainer.new()
 	item.hbox.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
@@ -83,7 +131,6 @@ func add_slider(
 	
 	var bg = Panel.new()
 	if shader :
-		
 		var smaterial := ShaderMaterial.new()
 		smaterial.shader = shader
 		item.material = smaterial
@@ -92,7 +139,6 @@ func add_slider(
 	bg.size_flags_horizontal = SIZE_EXPAND_FILL
 	bg.size_flags_vertical = SIZE_SHRINK_CENTER
 	bg.minimum_size = Vector2(0, 16)
-	bg.add_theme_stylebox_override("panel", default_slider_panel)
 	
 	item.bg = bg
 	
@@ -119,10 +165,6 @@ func add_slider(
 	
 	item.update_call = update_call
 	
-	sliders.append(item)
-	
-	add_child(item.hbox)
-	
 	item.set_coloring(colorized_sliders)
 	return item
 
@@ -136,6 +178,8 @@ func set_color(new_ : Color) :
 	if color == new_ :
 		return
 	color = new_
+	
+	alpha_slider.set_value(color.a * 255)
 	_reset_color()
 
 ##########################################
@@ -144,11 +188,14 @@ func _slider_val_changed(val : float, item : SliderItem) :
 	if updating :
 		return
 		
-	_update_all_sliders()
 	_update_color()
+	_update_all_sliders()
+	
 	
 func _update_color() :
 	_make_color()
+	color.a = alpha_slider.get_value() / 255.0
+	
 	emit_signal("color_updated", color)
 	
 func _update_all_sliders() :
@@ -156,6 +203,24 @@ func _update_all_sliders() :
 		if i.update_call != StringName() :
 			call(i.update_call, i)
 			#item.update_call.call(item) U_U (B U G)
+			
+	_update_alpha()
+			
+func _update_alpha() :
+	if not edit_alpha :
+		return
+		
+	var c := color
+	c.a = 0
+	alpha_slider.material.set_shader_param("c1", c)
+	c.a = 1
+	alpha_slider.material.set_shader_param("c2", c)
+	
+func _update_alpha_visibility() :
+	alpha_slider.hbox.visible = edit_alpha
+	hsep.visible = edit_alpha
+	
+	_update_alpha()
 
 ###########################################
 
