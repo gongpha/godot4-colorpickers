@@ -3,19 +3,19 @@ class_name PickerSlidersHSV
 
 func _init() :
 	super._init()
-	#smaterial.set_shader_param("mode", 3)
+	#smaterial.set_shader_parameter("mode", 3)
 	var shader := preload("res://resource/shader/hsv_rectangle.gdshader")
 	
 	var item : PickerSliders.SliderItem
 	
 	item = add_slider("H", StringName(), shader, 359, 1)
-	item.material.set_shader_param("mode", 2)
+	item.material.set_shader_parameter("mode", 2)
 	
 	item = add_slider("S", "_set_s", shader, 100, 1)
-	item.material.set_shader_param("mode", 4)
+	item.material.set_shader_parameter("mode", 4)
 	
 	item = add_slider("V", "_set_v", shader, 100, 1)
-	item.material.set_shader_param("mode", 4)
+	item.material.set_shader_parameter("mode", 4)
 	
 	force_update_sliders()
 
@@ -25,9 +25,9 @@ func _set_s(item) : # bug : typing
 	
 	var c : Color
 	c = c.from_hsv(h, 0.0, v)
-	item.material.set_shader_param("c1", c)
+	item.material.set_shader_parameter("c1", c)
 	c = c.from_hsv(h, 1.0, v)
-	item.material.set_shader_param("c2", c)
+	item.material.set_shader_parameter("c2", c)
 	
 func _set_v(item) : # bug : typing
 	var h : float = get_slider_item(0).get_value() / 359.0
@@ -35,9 +35,9 @@ func _set_v(item) : # bug : typing
 	
 	var c : Color
 	c = c.from_hsv(h, s, 0.0)
-	item.material.set_shader_param("c1", c)
+	item.material.set_shader_parameter("c1", c)
 	c = c.from_hsv(h, s, 1.0)
-	item.material.set_shader_param("c2", c)
+	item.material.set_shader_parameter("c2", c)
 
 func _make_color() :
 	color = Color.from_hsv(

@@ -90,7 +90,7 @@ func _init() :
 	)
 	
 	add_child(alpha_slider.hbox)
-	alpha_slider.material.set_shader_param("mode", 6)
+	alpha_slider.material.set_shader_parameter("mode", 6)
 	
 	alpha_slider.set_value(color.a * 255)
 
@@ -121,7 +121,7 @@ func _create_slider(
 	item.color_panel = default_slider_panel
 	
 	item.hbox = HBoxContainer.new()
-	item.hbox.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
+	item.hbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	
 	var label := Label.new()
 	label.text = label_text
@@ -138,7 +138,7 @@ func _create_slider(
 		
 	bg.size_flags_horizontal = SIZE_EXPAND_FILL
 	bg.size_flags_vertical = SIZE_SHRINK_CENTER
-	bg.minimum_size = Vector2(0, 16)
+	bg.custom_minimum_size = Vector2(0, 16)
 	
 	item.bg = bg
 	
@@ -146,9 +146,9 @@ func _create_slider(
 	var slider := HSlider.new()
 	slider.max_value = max_val
 	slider.step = step
-	slider.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
+	slider.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	
-	slider.connect("value_changed", Callable(self, "_slider_val_changed"), [item])
+	slider.value_changed.connect(_slider_val_changed.bind(item))
 	item.slider = slider
 		
 	bg.add_child(slider)
@@ -212,9 +212,9 @@ func _update_alpha() :
 		
 	var c := color
 	c.a = 0
-	alpha_slider.material.set_shader_param("c1", c)
+	alpha_slider.material.set_shader_parameter("c1", c)
 	c.a = 1
-	alpha_slider.material.set_shader_param("c2", c)
+	alpha_slider.material.set_shader_parameter("c2", c)
 	
 func _update_alpha_visibility() :
 	alpha_slider.hbox.visible = edit_alpha

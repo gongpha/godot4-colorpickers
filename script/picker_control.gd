@@ -63,14 +63,14 @@ func _init() :
 	pick_button = Button.new()
 	pick_button.icon = I_pipette
 	pick_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	pick_button.minimum_size = Vector2(32, 32)
+	pick_button.custom_minimum_size = Vector2(32, 32)
 	
 	shape_button = MenuButton.new()
 	shape_button.flat = false
 	shape_button.icon = null # soon(tm)
 	shape_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	shape_button.minimum_size = Vector2(32, 32)
-	shape_button.get_popup().connect("id_pressed", Callable(self, "_shape_selected"))
+	shape_button.custom_minimum_size = Vector2(32, 32)
+	shape_button.get_popup().id_pressed.connect(_shape_selected)
 	
 	var popup := shape_button.get_popup()
 	popup.add_radio_check_item("Rectangle", 0)
@@ -80,8 +80,8 @@ func _init() :
 	
 	sample_rect = ColorRect.new()
 	sample_rect.size_flags_horizontal = SIZE_EXPAND_FILL
-	sample_rect.connect("draw", Callable(self, "_sample_draw"))
-	sample_rect.connect("gui_input", Callable(self, "_sample_input"))
+	sample_rect.draw.connect(_sample_draw)
+	sample_rect.gui_input.connect(_sample_input)
 	
 	tab_hbox = HBoxContainer.new()
 	tab = HBoxContainer.new()
@@ -90,8 +90,8 @@ func _init() :
 	tab_more = MenuButton.new()
 	tab_more.flat = false
 	tab_more.text = "..."
-	tab_more.minimum_size = Vector2(32, 32)
-	tab_more.get_popup().connect("id_pressed", Callable(self, "_mode_selected"))
+	tab_more.custom_minimum_size = Vector2(32, 32)
+	tab_more.get_popup().id_pressed.connect(_mode_selected)
 	tab_content = VBoxContainer.new()
 	tab_content.size_flags_horizontal = SIZE_EXPAND_FILL
 	
@@ -99,12 +99,12 @@ func _init() :
 	code_hex_toggle = Button.new()
 	code_hex_line = LineEdit.new()
 	
-	code_hex_toggle.minimum_size = Vector2(32, 32)
+	code_hex_toggle.custom_minimum_size = Vector2(32, 32)
 	code_hex_toggle.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	code_hex_toggle.connect("pressed", Callable(self, "_code_hex_toggle"))
+	code_hex_toggle.pressed.connect(_code_hex_toggle)
 	code_hex_toggle.text = '#'
 	code_hex_line.size_flags_horizontal = SIZE_EXPAND_FILL
-	code_hex_line.connect("text_submitted", Callable(self, "_html_submitted"))
+	code_hex_line.text_submitted.connect(_html_submitted)
 	
 	#
 	
@@ -132,14 +132,12 @@ func add_mode(sliders : PickerSliders, shape : PickerShape) :
 	var mode := Mode.new()
 	mode.sliders = sliders
 	
-	var call := Callable(self, "_set_color")
-	
-	sliders.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
-	sliders.connect("color_updated", call, [false, true])
+	sliders.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	sliders.color_updated.connect(_set_color.bind(false, true))
 	
 	mode.shape = shape
-	if !shape.is_connected("color_updated", call) :
-		shape.connect("color_updated", call, [true, false])
+	if !shape.color_updated.is_connected(_set_color) :
+		shape.color_updated.connect(_set_color.bind(true, false))
 	
 	var button := Button.new()
 	button.text = sliders.name
@@ -172,7 +170,7 @@ func add_mode(sliders : PickerSliders, shape : PickerShape) :
 	_update_popup()
 	
 	var id := modes.size() - 1
-	button.connect("pressed", Callable(self, "_mode_selected"), [id])
+	button.pressed.connect(_mode_selected.bind(id))
 	
 	if id == 0 :
 		# select first
@@ -295,7 +293,7 @@ func _reset_color(update_sliders : bool, update_shape : bool) :
 			#print("SHAPE")
 		
 	_update_codehex()
-	sample_rect.update()
+	sample_rect.queue_redraw()
 		
 func _code_hex_toggle() :
 	use_hex = !use_hex
@@ -391,11 +389,11 @@ func set_old_color(new_ : Color) :
 	if old_color == new_ :
 		return
 	old_color = new_
-	sample_rect.update()
+	sample_rect.queue_redraw()
 
 func set_display_old_color(new_ : bool) :
 	display_old_color = new_
-	sample_rect.update()
+	sample_rect.queue_redraw()
 	
 func set_edit_alpha(new_ : bool) :
 	if edit_alpha == new_ :

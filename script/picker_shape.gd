@@ -52,7 +52,7 @@ var color : Color
 signal color_updated(col)
 
 func _init() :
-	minimum_size = Vector2(256 + 4 + 32, 256)
+	custom_minimum_size = Vector2(256 + 4 + 32, 256)
 	
 	hbox = HBoxContainer.new()
 	#hbox.set_anchors_preset(Control.PRESET_WIDE)
@@ -62,30 +62,30 @@ func _init() :
 	uv_mat = ShaderMaterial.new()
 	uv_draw = Control.new()
 	uv_draw.size_flags_horizontal = SIZE_EXPAND_FILL
-	uv_draw.minimum_size = Vector2(256, 256)
+	uv_draw.custom_minimum_size = Vector2(256, 256)
 	uv_draw.material = uv_mat
 	uv_draw.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	uv_draw.connect("draw", Callable(self, "_draw_rect"), [uv_draw])
+	uv_draw.draw.connect(_draw_rect.bind(uv_draw))
 	hbox.add_child(uv_draw)
 	
 	uv = Control.new()
-	uv.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
-	uv.connect("gui_input", Callable(self, "_uv_gui_input"))
-	uv.connect("draw", Callable(self, "_uv_draw"))
+	uv.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	uv.gui_input.connect(_uv_gui_input)
+	uv.draw.connect(_uv_draw)
 	uv_draw.add_child(uv)
 	
 	w_mat = ShaderMaterial.new()
 	w_draw = Control.new()
-	w_draw.minimum_size = Vector2(32, 256)
+	w_draw.custom_minimum_size = Vector2(32, 256)
 	w_draw.material = w_mat
 	w_draw.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	w_draw.connect("draw", Callable(self, "_draw_rect"), [w_draw])
+	w_draw.draw.connect(_draw_rect.bind(w_draw))
 	hbox.add_child(w_draw)
 	
 	w = Control.new()
-	w.set_anchors_and_offsets_preset(Control.PRESET_WIDE)
-	w.connect("gui_input", Callable(self, "_w_gui_input"))
-	w.connect("draw", Callable(self, "_w_draw"))
+	w.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	w.gui_input.connect(_w_gui_input)
+	w.draw.connect(_w_draw)
 	w_draw.add_child(w)
 	
 #	cursor = Control.new()
@@ -263,22 +263,22 @@ func _draw_rect(control : Control) :
 	control.draw_rect(Rect2(Vector2(), control.size), Color.WHITE)
 	
 func _update_uv_value() :
-	uv_mat.set_shader_param("uv", uv_input)
-	w_mat.set_shader_param("uv", uv_input)
+	uv_mat.set_shader_parameter("uv", uv_input)
+	w_mat.set_shader_parameter("uv", uv_input)
 	
 func _update_w_value() :
-	uv_mat.set_shader_param("w", w_input)
-	w_mat.set_shader_param("w", w_input)
+	uv_mat.set_shader_parameter("w", w_input)
+	w_mat.set_shader_parameter("w", w_input)
 	
 func _update_color() :
 	_make_color()
 	emit_signal("color_updated", color)
 	
 func _update_control() :
-	uv_draw.update()
-	w_draw.update()
-	uv.update()
-	w.update()
+	uv_draw.queue_redraw()
+	w_draw.queue_redraw()
+	uv.queue_redraw()
+	w.queue_redraw()
 	
 func _set_shape(new_ : int) :
 	#cursor.update()

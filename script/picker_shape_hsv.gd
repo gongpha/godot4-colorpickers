@@ -9,17 +9,17 @@ func _update_shape() :
 	match shape :
 		ShapeType.SHAPE_RECTANGLE :
 			uv_mat.shader = preload("res://resource/shader/hsv_rectangle.gdshader")
-			uv_mat.set_shader_param("mode", 0)
+			uv_mat.set_shader_parameter("mode", 0)
 			w_mat.shader = uv_mat.shader
-			w_mat.set_shader_param("mode", 1)
+			w_mat.set_shader_parameter("mode", 1)
 			w_draw.show()
 			
 		ShapeType.SHAPE_CIRCLE :
 			uv_mat.shader = preload("res://resource/shader/hsv_circle.gdshader")
 			w_mat.shader = preload("res://resource/shader/hsv_rectangle.gdshader")
-			w_mat.set_shader_param("mode", 3)
-			w_mat.set_shader_param("c1", Color.WHITE)
-			w_mat.set_shader_param("c2", Color.BLACK)
+			w_mat.set_shader_parameter("mode", 3)
+			w_mat.set_shader_parameter("c1", Color.WHITE)
+			w_mat.set_shader_parameter("c2", Color.BLACK)
 			w_draw.show()
 			
 		ShapeType.SHAPE_RECTANGLE_WHEEL :

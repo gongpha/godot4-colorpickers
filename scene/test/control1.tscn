@@ -5,38 +5,44 @@
 [ext_resource type="Script" path="res://script/picker_shape_hsv.gd" id="3_ss4pi"]
 
 [node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 offset_right = 84.0
 
 [node name="PickerControl" type="VBoxContainer" parent="."]
+layout_mode = 0
 offset_right = 84.0
 offset_bottom = 110.0
-script = ExtResource( "1_k3fsf" )
+script = ExtResource("1_k3fsf")
 edit_alpha = false
 
 [node name="PickerSlidersHSV" type="VBoxContainer" parent="."]
+layout_mode = 0
 offset_left = 398.0
 offset_top = 47.0
 offset_right = 669.0
 offset_bottom = 169.0
-script = ExtResource( "2_ipt85" )
+script = ExtResource("2_ipt85")
 metadata/_edit_layout_mode = 0
 metadata/_edit_use_custom_anchors = false
 
 [node name="PickerShapeHSV" type="AspectRatioContainer" parent="."]
+layout_mode = 0
 offset_left = 347.0
 offset_top = 212.0
 offset_right = 387.0
 offset_bottom = 252.0
-script = ExtResource( "3_ss4pi" )
+script = ExtResource("3_ss4pi")
 shape = 1
 metadata/_edit_layout_mode = 0
 metadata/_edit_use_custom_anchors = false
 
 [node name="PickerShapeHSV2" type="AspectRatioContainer" parent="."]
+layout_mode = 0
 offset_left = 695.0
 offset_top = 217.0
 offset_right = 735.0
 offset_bottom = 257.0
-script = ExtResource( "3_ss4pi" )
+script = ExtResource("3_ss4pi")
 metadata/_edit_layout_mode = 0
 metadata/_edit_use_custom_anchors = false
